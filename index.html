@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101522">
+  <title>VideoPanel</title>
+  <style>
+    :root{color-scheme:dark;--bg:#0d111b;--panel:#171e2d;--line:#2b3549;--muted:#98a5bb;--blue:#397ff0;--white:#f4f7fc}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--white);font:16px system-ui,-apple-system,Segoe UI,sans-serif}
+    .wrap{max-width:900px;margin:auto;padding:24px 16px 56px}.top{display:flex;align-items:center;gap:12px;margin:8px 0 28px}
+    .logo{width:46px;height:46px;border-radius:14px;background:var(--blue);display:grid;place-items:center;font-size:23px}
+    h1{font-size:23px;margin:0}.sub{color:var(--muted);font-size:13px}.panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:22px;margin:14px 0}
+    h2{font-size:19px;margin:0 0 16px}label{display:block;color:#b6c1d3;font-size:14px;margin:14px 0 7px}
+    input,button{font:inherit}input[type=email],input[type=password],input[type=text],input[type=file]{width:100%;padding:13px;border-radius:11px;border:1px solid var(--line);background:#202a3c;color:white}
+    button,.btn{border:0;border-radius:11px;background:var(--blue);color:white;padding:13px 17px;font-weight:650;cursor:pointer}
+    button:disabled{opacity:.5;cursor:not-allowed}.full{width:100%;margin-top:16px}.secondary{background:#29364c}.danger{background:#8e3445}
+    .hidden{display:none!important}.note{color:var(--muted);font-size:13px;line-height:1.55}.status{margin-top:12px;color:#9fc4ff;white-space:pre-wrap}
+    .row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.video{width:100%;max-height:70vh;background:#000;border-radius:14px}
+    .list{display:grid;gap:12px}.item{padding:14px;border:1px solid var(--line);border-radius:13px;display:grid;gap:8px}
+    .url{font-size:13px;color:#a9caff;overflow-wrap:anywhere}.actions{display:flex;gap:8px;flex-wrap:wrap}.actions button{padding:9px 12px;font-size:13px}
+    a{color:#a9caff}.tag{font-size:12px;color:#9fb0ca}.empty{color:var(--muted);padding:10px 0}
+    @media(min-width:700px){.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.panel{padding:26px}}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="logo">▷</div>
+    <div><h1>VideoPanel</h1><div class="sub">Panel video pribadi</div></div>
+  </header>
+
+  <section id="setup" class="panel hidden">
+    <h2>Hubungkan Supabase</h2>
+    <p class="note">Isi URL proyek dan anon/publishable key dari pengaturan Supabase. Data ini boleh digunakan di browser; jangan pernah memasukkan service_role key.</p>
+    <label>Project URL</label><input id="projectUrl" type="text" placeholder="https://xxxx.supabase.co">
+    <label>Anon / publishable key</label><input id="anonKey" type="text" placeholder="sb_publishable_... atau anon key">
+    <button id="saveConfig" class="full">Simpan konfigurasi di perangkat ini</button>
+    <p id="setupStatus" class="status"></p>
+  </section>
+
+  <section id="login" class="panel hidden">
+    <h2>Masuk Admin</h2>
+    <p class="note">Gunakan akun yang sudah dibuat di Supabase Authentication.</p>
+    <label>Email</label><input id="email" type="email" autocomplete="username" placeholder="admin@email.com">
+    <label>Password</label><input id="password" type="password" autocomplete="current-password" placeholder="Password admin">
+    <button id="loginBtn" class="full">Masuk</button>
+    <p id="loginStatus" class="status"></p>
+  </section>
+
+  <main id="dashboard" class="hidden">
+    <div class="row"><div><h2>Dashboard Admin</h2><div class="sub" id="who"></div></div><button id="logout" class="secondary">Keluar</button></div>
+    <div class="grid">
+      <section class="panel">
+        <h2>Upload Video</h2>
+        <label>Judul video</label><input id="title" type="text" maxlength="100" placeholder="Contoh: Video pertama">
+        <label>Pilih file video</label><input id="videoFile" type="file" accept="video/*">
+        <p class="note">Gunakan video milikmu atau yang kamu punya izin untuk dibagikan. Batas ukuran mengikuti pengaturan dan kuota paket penyimpananmu.</p>
+        <button id="uploadBtn" class="full">Upload & buat link</button>
+        <p id="uploadStatus" class="status"></p>
+      </section>
+      <section class="panel">
+        <h2>Pengaturan</h2>
+        <p class="note">Video yang diunggah ke bucket publik dapat ditonton siapa saja yang memiliki URL. Jangan unggah video pribadi atau sensitif.</p>
+        <button id="editConfig" class="secondary">Ubah konfigurasi</button>
+      </section>
+    </div>
+    <section class="panel">
+      <div class="row"><h2>Daftar Video</h2><button id="refresh" class="secondary">Muat ulang</button></div>
+      <div id="videoList" class="list"><div class="empty">Memuat daftar video…</div></div>
+    </section>
+  </main>
+
+  <main id="viewer" class="panel hidden">
+    <div class="row"><h2 id="viewerTitle">Video</h2><a href="./">VideoPanel</a></div>
+    <video id="player" class="video" controls playsinline preload="metadata"></video>
+    <p class="note">Jika video tidak dapat diputar, pemilik mungkin telah menghapusnya atau formatnya tidak didukung browser.</p>
+  </main>
+  <p class="note">VideoPanel starter • Simpan halaman ini sebagai aplikasi web melalui menu browser “Tambahkan ke layar utama”.</p>
+</div>
+<script type="module" src="./app.js"></script>
+</body>
+</html>
